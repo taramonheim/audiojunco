@@ -11,7 +11,8 @@ let drums
 let song
 let other
 let drums_fft
-let sambesi_array = []
+let ball_array = []
+
 
 function preload (){ //audio reinladen
     drums = loadSound('drums.mp3')
@@ -31,9 +32,6 @@ function setup(){
     drums_fft = new p5.FFT()
     drums_fft.setInput(drums); //nur drums spur analysieren
     //analysieren wenns soweit ist:
-  
-
-
 }
 
 function toggleSong (){
@@ -50,10 +48,10 @@ function draw(){
   background(253, 244, 209);
   checkHH(); //Highhead 
 
-   sambesi_array.forEach(function (sambesi) {
-    sambesi.update();
-    sambesi.show();
-   })
+  ball_array.forEach(function (ball){
+    ball.update();
+    ball.show();
+})
 }
 
 let lastHHval = 0;
@@ -61,12 +59,12 @@ let direction_hh = 1; // wenn HH ansteigt dann speichern wir einen positiven Wer
 function checkHH() {
  let drums_spectrum = drums_fft.analyze();
  console.log(drums_spectrum); 
- let hh_value = drums_spectrum [231]; //TODO:ersetzten durch eigenes highhead value 
+ let hh_value = drums_spectrum [2]; //TODO:ersetzten durch eigenes highhead value 
 
  if(lastHHval > hh_value) { //vergleichen und schauen in welche Richtung der Track läuft 
-   if(direction_hh > 0 && hhValue > 99 ) { //TODO: anderer Wert
-     let sambesi = new sambesi(50, 50); 
-    sambesi_array.push(sambesi); 
+   if(direction_hh > 0 && lastHHval > 196 ) { //TODO: anderer Wert
+    let ball = new Ball(50, 50); 
+    ball_array.push(ball); 
    }
     direction_hh =-1; //man schaut auf welcher Seite des Ausschlags man ist
  } else {
@@ -77,7 +75,7 @@ function checkHH() {
 
 }
 
-class sambesi {
+class Ball {
   constructor(x,y,r = 20) {
     this.x =x;
     this.y =y;

@@ -7,20 +7,20 @@ Peak:  ? noch rausfinden*/
 //TODO: freqfinder 
 
 
-let drums
-let song
-let other
-let drums_fft
-let ball_array = []
+let drums;
+let song;
+let other;
+let drums_fft;
+let ball_array = [];
 
 
 function preload (){ //audio reinladen
-    drums = loadSound('drums.mp3')
-    song = loadSound('Junco.mp3')
+    drums = loadSound('drums.mp3');
+    song = loadSound('Junco.mp3');
 }
 
-let canvas 
-let button 
+let button;
+let canvas;
 
 function setup(){
     canvas = createCanvas(1920, 1080);
@@ -48,10 +48,10 @@ function draw(){
   background(253, 244, 209);
   checkHH(); //Highhead 
 
-  ball_array.forEach(function (ball){
-    ball.update();
-    ball.show();
-})
+      ball_array.forEach(function (ball){
+        ball.update();
+        ball.show();
+    });
 }
 
 let lastHHval = 0;

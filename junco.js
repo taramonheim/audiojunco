@@ -5,6 +5,9 @@ Peak:  ? noch rausfinden*/
 //neues File anschauen freqfinder
 //other.mp3 -marimba 
 //TODO: freqfinder 
+//bass.mp3: Synthesiser 
+//other.mp3: Marimba
+//drums.pm3: Drums
 
 
 let drums;
@@ -59,10 +62,10 @@ let direction_hh = 1; // wenn HH ansteigt dann speichern wir einen positiven Wer
 function checkHH() {
  let drums_spectrum = drums_fft.analyze();
  console.log(drums_spectrum); 
- let hh_value = drums_spectrum [2]; //TODO:ersetzten durch eigenes highhead value 
+ let hh_value = drums_spectrum [40]; //TODO:ersetzten durch eigenes highhead value 
 
  if(lastHHval > hh_value) { //vergleichen und schauen in welche Richtung der Track läuft 
-   if(direction_hh > 0 && lastHHval > 196 ) { //TODO: anderer Wert
+   if(direction_hh > 0 && lastHHval > 70 ) { //TODO: anderer Wert
     let ball = new Ball(50, 50); 
     ball_array.push(ball); 
    }

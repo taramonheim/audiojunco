@@ -1,10 +1,9 @@
-console.log("hello world");
-var spectrum = []
+let spectrum = []
 
 let fft, song, filter;
 
 function preload(){
-  song = loadSound('drums.mp3');
+  song = loadSound('other.mp3');
 }
 
 function setup() {

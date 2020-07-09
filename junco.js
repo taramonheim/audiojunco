@@ -24,6 +24,7 @@ function preload () { //audio reinladen
     drums = loadSound('drums.mp3');
     marimba = loadSound('other.mp3');
     song = loadSound('Junco.mp3');
+    bass = loadSound('bass.mp3')
 }
 
 function setup() {
@@ -38,6 +39,9 @@ function setup() {
     drums_fft = new p5.FFT()
     drums_fft.setInput(drums); //nur drums spur analysieren
     //analysieren wenns soweit ist:
+    bass.disconnect();
+    bass_fft = new p5.FFT();
+    bass_fft.setInput(bass);
 }
 
 function toggleSong() {
@@ -45,10 +49,12 @@ function toggleSong() {
     song.pause();
     drums.pause();
     marimba.pause();
+    bass.pause();
 } else {
     song.play();
     drums.play();
     marimba.play();
+    bass.play();
   }
 }
 
@@ -60,6 +66,11 @@ function draw(){
         ball.show();
     });
     checkHH(marimba_fft, 87, 70); //Highhead 
+    ball_array.forEach(function (ball){
+      ball.update();
+      ball.show();
+  });
+  checkHH(drums_fft,3 , 194); //Highhead 
     ball_array.forEach(function (ball){
       ball.update();
       ball.show();

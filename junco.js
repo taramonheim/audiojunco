@@ -21,6 +21,7 @@ let marimba_fft;
 let marimba_array = [];
 let bass_fft;
 let vocals_fft;
+let stair = [];
 
 function preload () { //audio reinladen
     vocals = loadSound('vocals.mp3')
@@ -47,7 +48,7 @@ function setup() {
     vocals.disconnect();
     vocals_fft = new p5.FFT();
     vocals_fft.setInput(vocals); //nur drums spur analysieren
-    //analysieren wenns soweit ist:
+    canvas.mousePressed(stepTest);
 }
 
 function toggleSong() {
@@ -64,18 +65,26 @@ function toggleSong() {
 
 function draw(){
   background(253, 244, 209);
-  checkHH(drums_fft, 2, 196);
-  checkHH(marimba_fft, 87, 70); //Highhead 
-  checkHH(bass_fft, 3, 194); //Highhead 
-  checkHH(vocals_fft, 10, 144); //Highhead 
-    ball_array.forEach(function (ball, i){
-      ball.update();
-      if(ball.alive){
-          ball.show();
-      }else{
-          ball_array.splice(i, 1);
-      }
-    }) 
+  checkHH(marimba_fft, 87, 166);
+  checkHH(marimba_fft, 65, 160);
+  checkHH(marimba_fft, 1, 140);
+  stair.forEach( (step, i) => {
+    step.update();
+    if (step.alive) {
+      step.show();
+    } else {
+      stair.splice(i ,1);
+    }
+  });
+  ball_array.forEach(function (ball, i){
+    ball.update();
+    if(ball.alive){
+        ball.show();
+    } else {
+        ball_array.splice(i, 1);
+    }
+  })
+
 }
 
 let lastHHval = 0;
@@ -83,10 +92,9 @@ let direction_hh = 1; // wenn HH ansteigt dann speichern wir einen positiven Wer
 
 function checkHH(input, hh, peak) {
   let spectrum = input.analyze();
-  console.log(spectrum);
   let hh_value = spectrum[hh]; //TODO:ersetzten durch eigenes highhead value 
     if(lastHHval > hh_value) { //vergleichen und schauen in welche Richtung der Track läuft 
-    if(direction_hh > 0 && lastHHval > peak) { //TODO: anderer Wert
+    if(direction_hh > 0 && lastHHval > peak && ball_array.length === 0) { //TODO: anderer Wert
      let ball = new Ball(input);
      ball_array.push(ball); 
     }
@@ -97,12 +105,38 @@ function checkHH(input, hh, peak) {
   lastHHval = hh_value;
 }
 
+class Step {
+  constructor(y, width) {
+    this.x = canvas.width;
+    this.y = y;
+    this.width = width;
+    this.height = canvas.height;
+    this.speed = -1;
+    this.alive = true;
+  }
+
+  show() {
+    push();
+      noStroke();
+      fill(236, 111, 39);
+      rect(this.x, this.y, this.width, this.height);
+    pop();
+  }
+
+  update() {
+    this.x += this.speed;
+    if (this.x < 0 - width) {
+      this.alive = false;
+    }
+  }
+}
+
 class Ball {
   constructor(name) {
     this.y = 50;
     this.name = name;
-    this.speed = 0.8;
-    this.accel=1.3;
+    this.speed = 1;
+    this.accel= 1.6;
     this.alive = true;
   }
  
@@ -136,4 +170,9 @@ class Ball {
       this.alive = false;
     }
   }
+}
+
+function stepTest(){
+  let step = new Step(Math.floor(Math.random()*800), 50)
+  stair.push(step);
 }

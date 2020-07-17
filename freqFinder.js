@@ -3,7 +3,7 @@ let spectrum = [];
 let fft, song, filter;
 
 function preload(){
-  song = loadSound('other.mp3');
+  song = loadSound('bass.mp3');
 }
 
 function setup() {

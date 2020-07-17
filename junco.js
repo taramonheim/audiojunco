@@ -75,6 +75,7 @@ function toggleSong() {
     song.play();
     drums.play();
     marimba.play();
+    bass.play();
   }
 }
 
@@ -264,8 +265,10 @@ class Step {
 }
 
 class Ball {
-  constructor(name) {
-    this.y = 50;
+  constructor(x,y,r,name) {
+    this.x =x;
+    this.y =y;
+    this.r = r;
     this.name = name;
     this.speed = 1;
     this.accel = 1.6;
@@ -293,8 +296,5 @@ class Ball {
   update() {
     this.y += this.speed;
     this.speed *= this.accel;
-    if (this.y > height + 100) {
-      this.alive = false;
-    }
   }
 }

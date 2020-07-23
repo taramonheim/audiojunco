@@ -1,41 +1,146 @@
-/*marimba
-drums.mp3 
-Bands: ? 
-Peak:  ? noch rausfinden*/
-//neues File anschauen freqfinder
-//other.mp3 -marimba 
-//TODO: freqfinder 
-/*
-75 has 120
-*/
-
-let marimbaNotes = [131, 104, 87, 65]
+const data = [{
+  "time": 55,
+  "freq": 131,
+  "amp": 140,
+}, {
+  "time": 190,
+  "freq": 131,
+  "amp": 140,
+}, {
+  "time": 465,
+  "freq": 104,
+  "amp": 140,
+}, {
+  "time": 608,
+  "freq": 87,
+  "amp": 150,
+}, {
+  "time": 873,
+  "freq": 65,
+  "amp": 200,
+}, {
+  "time": 1424,
+  "freq": 65,
+  "amp": 180,
+}, {
+  "time": 1700,
+  "freq": 87,
+  "amp": 180,
+}, {
+  "time": 1972,
+  "freq": 104,
+  "amp": 180,
+}, {
+  "time": 2244,
+  "freq": 131,
+  "amp": 140,
+}, {
+  "time": 2375,
+  "freq": 131,
+  "amp": 140,
+}, {
+  "time": 2648,
+  "freq": 104,
+  "amp": 160,
+}, {
+  "time": 2790,
+  "freq": 87,
+  "amp": 180,
+}, {
+  "time": 3062,
+  "freq": 65,
+  "amp": 200,
+}, {
+  "time": 3606,
+  "freq": 65,
+  "amp": 180,
+}, {
+  "time": 3883,
+  "freq": 87,
+  "amp": 180,
+}, {
+  "time": 4152,
+  "freq": 104,
+  "amp": 180,
+}, {
+  "time": 4427,
+  "freq": 98,
+  "amp": 140,
+}, {
+  "time": 4563,
+  "freq": 98,
+  "amp": 140,
+}, {
+  "time": 4835,
+  "freq": 86,
+  "amp": 140,
+}, {
+  "time": 4971,
+  "freq": 77,
+  "amp": 150,
+}, {
+  "time": 5242,
+  "freq": 116,
+  "amp": 200,
+}, {
+  "time": 5791,
+  "freq": 77,
+  "amp": 180,
+}, {
+  "time": 6031,
+  "freq": 77,
+  "amp": 180,
+}, {
+  "time": 6335,
+  "freq": 116,
+  "amp": 200,
+}, {
+  "time": 6609,
+  "freq": 98,
+  "amp": 140,
+}, {
+  "time": 6746,
+  "freq": 98,
+  "amp": 140,
+}, {
+  "time": 7013,
+  "freq": 86,
+  "amp": 140,
+}, {
+  "time": 7151,
+  "freq": 77,
+  "amp": 150,
+}, {
+  "time": 7423,
+  "freq": 116,
+  "amp": 200,
+}, {
+  "time": 7969,
+  "freq": 77,
+  "amp": 180,
+}, {
+  "time": 8237,
+  "freq": 77,
+  "amp": 180,
+}, {
+  "time": 8518,
+  "freq": 116,
+  "amp": 200,
+}];
 
 let button;
 let canvas;
 let drums;
+let started = false;
+let startTime;
 let song;
 let junco_fft;
-let marimba;
-let bass;
-let piano;
-let vocals;
-let drums_fft;
-let ball_array = [];
-let marimba_fft;
-let marimba_array = [];
-let bass_fft;
-let vocals_fft;
+let sambesis = [];
 let stair = [];
-let startDelay = 40;
-let spacer = 0;
-let timer = 0;
-let spacer2 = 0;
-let timer2 = 0;
-let timer3 = 0;
-let spacer3 = 0;
-let timer4 = 0;
-let spacer4 = 0;
+let trails = [];
+let backgroundElements = [];
+let interval1;
+let interval2;
 
 function preload() { //audio reinladen
   vocals = loadSound('vocals.mp3')
@@ -45,215 +150,161 @@ function preload() { //audio reinladen
   song = loadSound('Junco.mp3');
 }
 
+// const btn = document.querySelector('button'),
+//   chunks = [];
+
+// function record() {
+//   chunks.length = 0;
+//   let stream = document.querySelector('canvas').captureStream(30),
+//     recorder = new MediaRecorder(stream);
+//   recorder.ondataavailable = e => {
+//     if (e.data.size) {
+//       chunks.push(e.data);
+//     }
+//   };
+//   recorder.onstop = exportVideo;
+//   btn.onclick = e => {
+//     recorder.stop();
+//     btn.textContent = 'start recording';
+//     btn.onclick = record;
+//   };
+//   recorder.start();
+//   btn.textContent = 'stop recording';
+// }
+
+// function exportVideo(e) {
+//   var blob = new Blob(chunks);
+//   var vid = document.createElement('video');
+//   vid.id = 'recorded'
+//   vid.controls = true;
+//   vid.src = URL.createObjectURL(blob);
+//   document.body.appendChild(vid);
+//   vid.play();
+// }
+// btn.onclick = record;
+
 function setup() {
   canvas = createCanvas(1920, 1080);
-  button = createButton('play or pause');
+  button = createButton('play');
   button.position(canvas.height + 10); //10 pixel unter canvas
   button.mousePressed(toggleSong);
   marimba.disconnect();
-  junco_fft = new p5.FFT();
-  junco_fft.setInput(song);
-  marimba_fft = new p5.FFT(0.3, 1024);
-  marimba_fft.setInput(marimba);
-  drums.disconnect();
-  drums_fft = new p5.FFT();
-  drums_fft.setInput(drums);
-  bass.disconnect();
-  bass_fft = new p5.FFT();
-  bass_fft.setInput(bass);
-  vocals.disconnect();
-  vocals_fft = new p5.FFT();
-  vocals_fft.setInput(vocals); //nur drums spur analysieren
+  junco_fft = new p5.FFT(0.9, 1024);
+  junco_fft.setInput(song); //nur drums spur analysieren
+  canvas.position(window.innerWidth / 2 - canvas.width / 2, window.innerHeight / 2 - canvas.height / 2);
+  interval1 = 2000;
+  interval2 = 2000;
 }
 
 function toggleSong() {
-  if (song.isPlaying()) {
-    song.pause();
-    drums.pause();
-    marimba.pause();
-  } else {
-    song.play();
-    drums.play();
-    marimba.play();
-    bass.play();
+  if (!song.isPlaying()) {
+    setTimeout(() => {
+      startTime = getMillis();
+    });
+    setTimeout(() => {
+      song.play()
+    }, 850);
   }
+}
+
+function getMillis() {
+  return performance.now();
 }
 
 function draw() {
   background(253, 244, 209);
-  tone1();
-  tone2();
-  tone3();
-  tone4();
+  drawBackgound();
+  backgroundElements.forEach((bge, i) => {
+    bge.update();
+    bge.show();
+  });
+  backgroundElements.filter((element) => !element.alive);
+  drawMarimba();
+  trails.forEach((trail, i) => {
+    trail.update();
+    if (trail.alive === true) {
+      trail.show();
+    } else {
+      trails.splice(i, 1);
+    }
+  });
+  sambesis.forEach((sambesi, i) => {
+    sambesi.update();
+    if (sambesi.alive === true) {
+      sambesi.show();
+    } else {
+      sambesis.splice(i, 1);
+    }
+  });
   stair.forEach((step, i) => {
-    step.update();
-    if (step.alive) {
-      step.show();
-    } else {
-      stair.splice(i, 1);
+    if (!!step) {
+      step.update();
+      if (step.alive === true) {
+        step.show();
+      } else {
+        stair[i] = null;
+        return;
+      }
     }
   });
-  ball_array.forEach(function (ball, i) {
-    ball.update();
-    if (ball.alive) {
-      ball.show();
-    } else {
-      ball_array.splice(i, 1);
-    }
-  });
-  if (timer > 0) {
-    timer--;
-  }
-  if (timer === 0) {
-    spacer = 0;
-  }
-  if (timer2 > 0) {
-    timer2--;
-  } 
-  if (timer2 === 0) {
-    spacer2 = 0;
-  }  
-  if (timer3 > 0) {
-    timer3--;
-  } 
-  if (timer3 === 0) {
-    spacer3 = 0;
-  }
-  if (timer4 > 0) {
-    timer4--;
-  }
-  if (timer4 === 0) {
-    spacer4 = 0;
-  }  
 }
 
-let lastHHval = 0;
-let direction_hh = 1; // wenn HH ansteigt dann speichern wir einen positiven Wert in die Variable (einfache Werte)
-
-function tone1() {
-  let hh = 131;
-  if (startDelay > 0) {
-    peak = 150;
-    startDelay--;
-  } else {
-    peak = 188;
-  }
-  let spectrum = junco_fft.analyze();
-  let hh_value = spectrum[hh]; //TODO:ersetzten durch eigenes highhead value 
-  if (lastHHval > hh_value) { //vergleichen und schauen in welche Richtung der Track läuft 
-    if (direction_hh > 0 && lastHHval > peak) { //TODO: anderer Wert
-      if (spacer < 2 && timer < 38) {
-        let step = new Step(hh*6, Math.floor(peak * 0.4));
-        stair.push(step);
-        spacer++;
-        if (spacer === 1) {
-        timer = 45;
-        } else if (spacer === 2) {
-          timer = 125;
-        }
-      } else {
-        return;
-      }
+function drawBackgound() {
+  if (interval1 >= 2000 && interval2 >= 2000) {
+    if (performance.now() - 0 >= interval1) {
+      const bge = new itsBackgroundBitch(color(72, 68, 97));
+      stair.push(bge);
+      interval1 += 500 + (int)(Math.random() * ((1500 - 500) + 1));
     }
-    direction_hh = -1; //man schaut auf welcher Seite des Ausschlags man ist
-  } else {
-    direction_hh = 1;
+    if (performance.now() - 0 >= interval2) {
+      const bge = new itsBackgroundBitch(color(96, 82, 129));
+      stair.push(bge);
+      interval2 += 500 + (int)(Math.random() * ((1500 - 500) + 1));
+    }
   }
-  lastHHval = hh_value;
 }
 
 
-function tone2() {
-  let hh = 104;
-  peak = 180;
-  let spectrum = junco_fft.analyze();
-  let hh_value = spectrum[hh]; //TODO:ersetzten durch eigenes highhead value 
-  if (lastHHval > hh_value) { //vergleichen und schauen in welche Richtung der Track läuft 
-    if (direction_hh > 0 && lastHHval > peak) { //TODO: anderer Wert
-      if (spacer2 < 1 && timer2 === 0) {
-        let step = new Step(hh*6, Math.floor(peak * 0.4));
-        stair.push(step);
-        spacer2++;
-        console.log(spacer2)
-        timer2 = 50;
-      } else {
-        return;
-      }
-    }
-    direction_hh = -1; //man schaut auf welcher Seite des Ausschlags man ist
-  } else {
-    direction_hh = 1;
+let marimbaState = 0;
+
+
+function drawMarimba() {
+  if (marimbaState === 0) {
+    started = true;
   }
-  lastHHval = hh_value;
+  if (data[marimbaState] != undefined) {
+    if (performance.now() - startTime >= data[marimbaState].time / baseSpeed) {
+      const step = new Step(data[marimbaState].freq * 6, Math.floor(data[marimbaState].amp * 0.6));
+      stair.push(step);
+      const sambesi = new Sambesi(step);
+      sambesis.push(sambesi);
+      trails.push(new Trail(sambesi));
+      marimbaState++;
+    }
+  } else {
+    return;
+  }
 }
 
-function tone3() {
-  let hh = 87;
-  peak = 205;
-  let spectrum = junco_fft.analyze();
-  let hh_value = spectrum[hh]; //TODO:ersetzten durch eigenes highhead value 
-  if (lastHHval > hh_value) { //vergleichen und schauen in welche Richtung der Track läuft 
-    if (direction_hh > 0 && lastHHval > peak) { //TODO: anderer Wert
-      if (spacer3 < 1 && timer3 === 0) {
-        let step = new Step(hh*6, Math.floor(peak*0.3));
-        stair.push(step);
-        spacer3++;
-        console.log(spacer2)
-        timer3 = 70;
-      } else {
-        return;
-      }
-    }
-    direction_hh = -1; //man schaut auf welcher Seite des Ausschlags man ist
-  } else {
-    direction_hh = 1;
-  }
-  lastHHval = hh_value;
-}
-
-function tone4() {
-  let hh = 65;
-  let peak = 188;
-  let spectrum = junco_fft.analyze();
-  let hh_value = spectrum[hh]; //TODO:ersetzten durch eigenes highhead value 
-  if (lastHHval > hh_value) { //vergleichen und schauen in welche Richtung der Track läuft 
-    if (direction_hh > 0 && lastHHval > peak) { //TODO: anderer Wert
-      if (spacer4 < 2 && timer4 < 10) {
-        let step = new Step(hh*6, Math.floor(peak));
-        stair.push(step);
-        spacer4++;
-        if (spacer4 === 1) {
-        timer4 = 45;
-        } else if (spacer4 === 2) {
-          timer4 = 90;
-        }
-      } else {
-        return;
-      }
-    }
-    direction_hh = -1; //man schaut auf welcher Seite des Ausschlags man ist
-  } else {
-    direction_hh = 1;
-  }
-  lastHHval = hh_value;
-}
-
-class Step {
-  constructor(height, width) {
-    this.x = canvas.width;
-    this.width = width;
-    this.height = height;
+class itsBackgroundBitch {
+  constructor(color) {
+    this.color = color;
+    this.width = 200 + (int)(Math.random() * ((550 - 200) + 1));
+    this.height = 100 + (int)(Math.random() * ((750 - 100) + 1));
+    this.x = canvas.width + this.width;
     this.y = canvas.height - this.height;
-    this.speed = -30;
+    this.speed = -7;
     this.alive = true;
   }
 
   show() {
-    push();
-    noStroke();
-    fill(236, 111, 39);
-    rect(this.x, this.y, this.width, this.height);
-    pop();
+    if (this.alive) {
+      push();
+      noStroke();
+      fill(this.color);
+      rect(this.x, this.y, this.width, this.height);
+      pop();
+    }
   }
 
   update() {
@@ -264,37 +315,90 @@ class Step {
   }
 }
 
-class Ball {
-  constructor(x,y,r,name) {
-    this.x =x;
-    this.y =y;
-    this.r = r;
-    this.name = name;
-    this.speed = 1;
-    this.accel = 1.6;
+const baseSpeed = 1;
+
+class Step {
+  constructor(height, width) {
+    this.width = width;
+    this.x = canvas.width + this.width / 2;
+    this.height = height;
+    this.y = canvas.height - this.height;
+    this.speed = -20 * baseSpeed;
+    this.alive = true;
+  }
+
+  show() {
+    if (this.alive) {
+      push();
+      noStroke();
+      fill(236, 111, 39);
+      rect(this.x, this.y, this.width, this.height);
+      pop();
+    }
+  }
+
+  update() {
+    this.x += this.speed;
+    if (this.x < 0 - this.width) {
+      this.alive = false;
+    }
+  }
+}
+
+class Sambesi {
+  constructor(step) {
+    this.step = step;
+    this.x = canvas.width * 0.382 + this.step.width / 2 + 10;
+    this.y = -860 - canvas.height - this.step.height;
+    this.dropSpeed = 50 * baseSpeed;
     this.alive = true;
   }
 
   show() { //Zeichnet Ball auf Funktion
     push(); //stylistische Parameter nur auf Ellipse weil push und pop 
-    if (this.name === junco_fft) {
-      noStroke();
-      fill(52, 40, 90);
-      ellipse(50, this.y, 16, 16);
-      fill(84, 68, 134);
-      arc(50, this.y, 16, 16, -PI, 0);
-    } else if (this.name === bass_fft) {
-      fill(52, 40, 90);
-      arc(400, this.y, 80, 80, -PI, 0);
-    } else if (this.name === vocals_fft) {
-      fill(52, 40, 90);
-      arc(500, this.y, 80, 80, -PI, 0);
-    }
+    noStroke();
+    fill(248, 170, 49, 200);
+    rect(this.x - 10.5, this.y, 20, -1700);
+    fill(84, 68, 134);
+    ellipse(this.x, this.y, 20, 20);
+    fill(52, 40, 90);
+    arc(this.x, this.y, 20, 20, -PI, 0);
     pop();
   }
 
   update() {
-    this.y += this.speed;
-    this.speed *= this.accel;
+    this.y += this.dropSpeed;
+    if (this.y > height - this.step.height) {
+      this.alive = false;
+    }
+  }
+}
+
+class Trail {
+  constructor(Sambesi) {
+    this.ball = Sambesi;
+    this.color = color(245, 172, 32, 185);
+    this.width = 20;
+    this.height = -1200;
+    this.x = this.ball.x - this.ball.width / 2 - this.width / 2;
+    this.alive = true;
+  }
+
+  show() {
+    push();
+    noStroke();
+    fill(this.color);
+    rect(this.x, this.ball.y - 10, 20, this.height);
+    pop();
+  }
+
+  update() {
+    if (!this.ball.alive) {
+      this.x = this.ball.step.x - 20 * baseSpeed + this.ball.step.width / 2 - this.width / 2;
+      this.color = color(245, 172, 32);
+    }
+    if (!this.ball.step.alive) {
+      this.alive = false;
+    }
   }
 }

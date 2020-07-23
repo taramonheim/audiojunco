@@ -1,5 +1,6 @@
 console.log("hello world");
 var spectrum = []
+const bellBands = [87, 65, 104, 75, 56];
 
 let fft, song, filter;
 
@@ -23,7 +24,7 @@ function setup() {
   song.connect(filter);
 
 
-  fft = new p5.FFT();
+  fft = new p5.FFT(0.9, 1024);
 }
 
 const chimes = [];
@@ -43,9 +44,7 @@ function draw() {
   // draw filtered spectrum
   let spectrum = fft.analyze();
   spectrum.splice(180, 1204);
-  console.log(spectrum.length);
   spectrum.splice(0, 45);
-  console.log(spectrum.length);
   noStroke();
   for (let i = 0; i < spectrum.length; i++) {
     let x = map(i, 0, spectrum.length, 0, width);
@@ -67,8 +66,16 @@ function draw() {
       maxID = i+45;
     }
   }
+
+  let debugText = ""
+  bellBands.forEach(function (band){
+    debugText += spectrum[band]
+    debugText += "  -  "
+  })
+  // console.log(debugText);
   console.log("Max Band: " + maxID + " has " + maxHeight);
 }
+
 
 function makeNoise() {
   // see also: `userStartAudio()`

@@ -218,7 +218,7 @@ function draw() {
     bge.update();
     bge.show();
   });
-  backgroundElements.filter((element) => !element.alive);
+  backgroundElements.filter((element) => element.x < 0 - element.width);
   drawMarimba();
   trails.forEach((trail, i) => {
     trail.update();
@@ -309,9 +309,6 @@ class itsBackgroundBitch {
 
   update() {
     this.x += this.speed;
-    if (this.x < 0 - this.width) {
-      this.alive = false;
-    }
   }
 }
 

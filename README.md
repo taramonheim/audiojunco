@@ -1,2 +1,0 @@
-# audiojunco
-Junco Audivisualisierung 

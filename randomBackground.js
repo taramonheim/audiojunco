@@ -57,9 +57,18 @@ function dotGrid(x, y, w, h) {
     delay = !delay
     for(j = 0; j<w; j=j+8) {
       delay = !delay
-      if (!delay) {
-        fill(236, 111, 39);
+      if (!delay && i > h*4) {
+        push();
+        colorMode(HSL)
+        fill(22, 50+i, 54);
         ellipse(x+j, y+i, 4);
+        pop();
+      } else if (!delay && i < h*4) {
+        push();
+        colorMode(HSL)
+        fill(22, i-50, 54);
+        ellipse(x+j, y+i, 4);
+        pop();
       }
     }
   }

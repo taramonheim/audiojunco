@@ -126,7 +126,71 @@ const data = [{
   "time": 8518,
   "freq": 116,
   "amp": 200,
-}];
+}, /*{
+  "time": 9198,
+  "freq": 131,
+  "amp": 140,
+}, {
+  "time": 9343,
+  "freq": 131,
+  "amp": 140,
+}, {
+  "time": 9613,
+  "freq": 104,
+  "amp": 140,
+}, {
+  "time": 10425,
+  "freq": 87,
+  "amp": 150,
+}, {
+  "time": 10697,
+  "freq": 65,
+  "amp": 200,
+}, {
+  "time": 10973,
+  "freq": 65,
+  "amp": 180,
+}, {
+  "time": 11106,
+  "freq": 87,
+  "amp": 180,
+}, {
+  "time": 11389,
+  "freq": 104,
+  "amp": 180,
+}, {
+  "time": 11528,
+  "freq": 131,
+  "amp": 140,
+}, {
+  "time": 11795,
+  "freq": 131,
+  "amp": 140,
+}, {
+  "time": 12337,
+  "freq": 104,
+  "amp": 160,
+}, {
+  "time": 12613,
+  "freq": 87,
+  "amp": 180,
+}, {
+  "time": 12879,
+  "freq": 65,
+  "amp": 200,
+}, {
+  "time": 13152,
+  "freq": 65,
+  "amp": 180,
+}, {
+  "time": 13285,
+  "freq": 87,
+  "amp": 180,
+}, {
+  "time": 13567,
+  "freq": 104,
+  "amp": 180,
+}*/];
 
 let button;
 let canvas;
@@ -185,25 +249,32 @@ function preload() { //audio reinladen
 
 function setup() {
   canvas = createCanvas(1920, 1080);
-  button = createButton('play');
-  button.position(canvas.height + 10); //10 pixel unter canvas
+  button = createButton('PLAY');
+  div = createDiv();
+  button.style('color', '#ffffff');
+  button.style('background-color', '#34285a');
+  button.style('border-style', 'none');
+  div.style('background-color', '#ffffff');
   button.mousePressed(toggleSong);
   marimba.disconnect();
   junco_fft = new p5.FFT(0.9, 1024);
   junco_fft.setInput(song); //nur drums spur analysieren
   canvas.position(window.innerWidth / 2 - canvas.width / 2, window.innerHeight / 2 - canvas.height / 2);
-  interval1 = 2000;
-  interval2 = 2000;
+  button.position(window.innerWidth / 2 - button.width / 2, 25);
+  div.position(window.innerWidth / 2 - button.width / 2, 10)
+  interval1 = 0;
+  interval2 = 0;
 }
 
 function toggleSong() {
   if (!song.isPlaying()) {
     setTimeout(() => {
       startTime = getMillis();
+      started = true;
     });
     setTimeout(() => {
       song.play()
-    }, 850);
+    }, 860);
   }
 }
 
@@ -218,7 +289,7 @@ function draw() {
     bge.update();
     bge.show();
   });
-  backgroundElements.filter((element) => element.x < 0 - element.width);
+  backgroundElements = backgroundElements.filter((e) => e.x > 0 - e.width);
   drawMarimba();
   trails.forEach((trail, i) => {
     trail.update();
@@ -250,15 +321,15 @@ function draw() {
 }
 
 function drawBackgound() {
-  if (interval1 >= 2000 && interval2 >= 2000) {
+  if (interval1 >= 0 && interval2 >= 0) {
     if (performance.now() - 0 >= interval1) {
-      const bge = new itsBackgroundBitch(color(72, 68, 97));
-      stair.push(bge);
+      const bge = new itsBackgroundBitch(color(72, 68, 97))
+      backgroundElements.push(bge);
       interval1 += 500 + (int)(Math.random() * ((1500 - 500) + 1));
     }
     if (performance.now() - 0 >= interval2) {
       const bge = new itsBackgroundBitch(color(96, 82, 129));
-      stair.push(bge);
+      backgroundElements.push(bge);
       interval2 += 500 + (int)(Math.random() * ((1500 - 500) + 1));
     }
   }
